@@ -1,50 +1,53 @@
 angular.module('myApp', [])
 	.controller('FunCtrl',FunCtrl)
+	
 	.directive('entering', entering)
 
 	.directive('zoomit', zoomit)
 
 	.directive('fadeit', fadeit)
 
-	
-
 	.directive('leaving', leaving)
 
 	.directive('welcome', welcome)
 
-	.directive("hello", function() {
-	  return {
-	    require: "welcome",
-	    link: function (scope, element, attrs, welcomeCtrl) {
-	      welcomeCtrl.sayHowdy();
-	    }
-	  };
- 	})
+	.directive("hello", hello)
 
- 	.directive("hi", function() {
-	  	return {
-		    require: "welcome",
-		    link: function (scope, element, attrs, welcomeCtrl) {
-		      welcomeCtrl.sayHi();
-		    }
-		}
-	 })
+ 	.directive("hi", hi)
 
  	.directive('trans', trans)
 
- 	.directive("clock", function() {
- 		return {
- 			restrict: "E",
- 			scope: {
- 				timezone: "@"
- 			},
- 			template: "<div>12:00pm {{timezone}} </div>"
- 		}
- 	})
+ 	.directive("clock", clock)
 
  	.directive("panel", panel)
 
  	.directive('myBox', myBox)
+
+ 	function hi() {
+
+ 		var directive = {
+ 			require: "welcome",
+		    link: link
+ 		}
+	  	return directive;
+
+	  	function link(scope, element, attrs, welcomeCtrl) {
+			welcomeCtrl.sayHi();
+		}
+	 }
+
+ 	function hello() {
+ 		var directive = {
+ 			require: "welcome",
+	    	link: link
+ 		}
+	  	return directive;
+
+	  	function link(scope, element, attrs, welcomeCtrl) {
+	      	welcomeCtrl.sayHowdy();
+	    }
+
+ 	}
 
  	function entering() {
 		return function(scope, element, attrs) {
@@ -58,6 +61,16 @@ angular.module('myApp', [])
 			})
 		}
 	}
+
+	function clock() {
+ 		return {
+ 			restrict: "E",
+ 			scope: {
+ 				timezone: "@"
+ 			},
+ 			template: "<div>12:00pm {{timezone}} </div>"
+ 		}
+ 	}
 
 	function zoomit() {
 
@@ -235,8 +248,6 @@ angular.module('myApp', [])
  		return directive;
  		
  		function link(scope, elem, attr, controller, transclude) {
- 				console.log('scope', scope.$parent)
- 				console.log('controller', controller);
  				elem.append('<span class="footer title">'  +scope.$parent.fun.title + '</span>');
  				elem.css('border', '2px ridge black');
  				elem.css('display', 'block');
