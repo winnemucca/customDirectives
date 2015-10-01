@@ -28,6 +28,21 @@ angular.module('myApp', [])
 
  	.directive('myPhoto', myPhoto)
 
+
+	.directive('someDirective', function () {
+	  return {
+	    scope: {
+	      name: '='
+	    },
+	    controller: function () {
+	      this.name = 'Pascal';
+	    },
+	    controllerAs: 'ctrl',
+	    bindToController: true,
+	    template: '<div>{{ctrl.name}}</div>'
+	  };
+	})
+
  	function myPhotos() {
  		var directive = {
  			restrict: 'E',
