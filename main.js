@@ -1,6 +1,52 @@
 angular.module('myApp', [])
 	.controller('FunCtrl',FunCtrl)
-	.directive('entering', function() {
+	.directive('entering', entering)
+
+	.directive('zoomit', zoomit)
+
+	.directive('fadeit', fadeit)
+
+	
+
+	.directive('leaving', leaving)
+
+	.directive('welcome', welcome)
+
+	.directive("hello", function() {
+	  return {
+	    require: "welcome",
+	    link: function (scope, element, attrs, welcomeCtrl) {
+	      welcomeCtrl.sayHowdy();
+	    }
+	  };
+ 	})
+
+ 	.directive("hi", function() {
+	  	return {
+		    require: "welcome",
+		    link: function (scope, element, attrs, welcomeCtrl) {
+		      welcomeCtrl.sayHi();
+		    }
+		}
+	 })
+
+ 	.directive('trans', trans)
+
+ 	.directive("clock", function() {
+ 		return {
+ 			restrict: "E",
+ 			scope: {
+ 				timezone: "@"
+ 			},
+ 			template: "<div>12:00pm {{timezone}} </div>"
+ 		}
+ 	})
+
+ 	.directive("panel", panel)
+
+ 	.directive('myBox', myBox)
+
+ 	function entering() {
 		return function(scope, element, attrs) {
 			element.bind('mouseenter', function() {
 				console.log(element);
@@ -11,11 +57,16 @@ angular.module('myApp', [])
 				scope.$apply(attrs.entering);
 			})
 		}
-	})
+	}
 
-	.directive('zoomit', function() {
-		return {
-			link: function(scope, elem, attr) {
+	function zoomit() {
+
+		var directive = {
+			link: link
+		}
+		return directive;
+
+		function link(scope, elem, attr) {
 				var dragging = false;
 				var lastX = 0;
 				elem.on('mousedown', function(event) {
@@ -56,52 +107,64 @@ angular.module('myApp', [])
 					}
 				})
 			}
-		}
-	})
+	}
 
-	.directive('fadeit', function() {
-		return {
-			link: function(scope, elem, attr) {
-				var dragging = false;
-				var lastY = 0;
-				
-				elem.on('mousedown', function(event){
-				console.log('eventY', event.pageY);
+	function fadeit() {
+
+		var directive = {
+			link: link
+		}
+		return directive;
+
+		function link(scope, elem, attr) {
+			var dragging = false;
+			var lastY = 0;
+			
+			elem.on('mousedown', function(event){
+			console.log('eventY', event.pageY);
+
+				lastY = event.pageY;
+				event.preventDefault();
+				dragging = true;
+			});
+			elem.on('mouseup', function() {
+				dragging =false;
+			});
+			elem.on('mouseleave', function() {
+				dragging= false;
+			});
+			elem.on('mousemove', function() {
+				if(dragging) {
+					var adjustment = null;
+					var currentOpacity = parseFloat(elem.css('opacity'));
+					if(event.pageY > lastY && currentOpacity <1) {
+						adjustment = 1.1;
+					} else if (currentOpacity > 0.5){
+						adjustment = 0.9;
+					}
+
+					if(adjustment) {
+						elem.css('opacity', currentOpacity*adjustment);
+					}
 
 					lastY = event.pageY;
-					event.preventDefault();
-					dragging = true;
-				});
-				elem.on('mouseup', function() {
-					dragging =false;
-				});
-				elem.on('mouseleave', function() {
-					dragging= false;
-				});
-				elem.on('mousemove', function() {
-					if(dragging) {
-						var adjustment = null;
-						var currentOpacity = parseFloat(elem.css('opacity'));
-						if(event.pageY > lastY && currentOpacity <1) {
-							adjustment = 1.1;
-						} else if (currentOpacity > 0.5){
-							adjustment = 0.9;
-						}
+				}
+			})
+	}
+	}
 
-						if(adjustment) {
-							elem.css('opacity', currentOpacity*adjustment);
-						}
+ 	function trans() {
+ 		var directive = {
+ 			restrict: 'E',
+ 			scope: {},
+ 			transclude: true,
+ 			template: "<div>This is the welcome component</div><ng-transclude></ng-transclude>"
+ 		}
 
-						lastY = event.pageY;
-					}
-				})
-			}
-		}
-	})
+ 		return directive;
+ 	}
 
-	
-
-	.directive('leaving', function() {
+ 	function leaving() {
 		return function(scope, element, attrs) {
 			element.bind('mouseleave', function() {
 				console.log(element);
@@ -111,13 +174,40 @@ angular.module('myApp', [])
 				scope.$apply(attrs.leaving)
 			})
 		}
-	})
+	}
 
-	.directive('welcome', function() {
-		return {
-			restrict: 'E',
+ 	function panel() {
+
+ 		var directive = {
+ 			restrict: "E",
+ 			transclude: true,
+ 			scope: {
+ 				title: "@"
+ 			},
+ 			template: "<div class='styled'>"+ "<div class='alert-box'>{{title}}</div>"+"<div ng-transclude></div>" + "</div"
+ 		}
+ 		return directive;
+ 	}
+
+
+ 	function welcome() {
+ 		var directive = {
+ 			restrict: 'E',
 			scope: {},
-			controller: function($scope) {
+			controller: welcomeController,
+			link: link
+			// controllerAs: 'vm',
+   //      	bindToController: true // because the scope is isolated
+ 		}
+		return directive;
+
+		function link(scope, element) {
+			element.bind('mouseenter', function() {
+			console.log(scope.words);
+			})
+		}
+
+		function welcomeController($scope) {
 				$scope.words = [];
 				vm = this;
 
@@ -130,72 +220,21 @@ angular.module('myApp', [])
 				vm.sayHi = function() {
 					$scope.words.push('hi');
 				}
-			},
-			link: function(scope, element) {
-				element.bind('mouseenter', function() {
-
-					console.log(scope.words);
-				})
 			}
-		}
-	})
+	}
 
+ 	function myBox() {
 
-	.directive("hello", function() {
-	  return {
-	    require: "welcome",
-	    link: function (scope, element, attrs, welcomeCtrl) {
-	      welcomeCtrl.sayHowdy();
-	    }
-	  };
- 	})
-
- 	.directive("hi", function() {
-	  	return {
-		    require: "welcome",
-		    link: function (scope, element, attrs, welcomeCtrl) {
-		      welcomeCtrl.sayHi();
-		    }
-		}
-	 })
-
- 	.directive('trans', function() {
- 		return {
- 			restrict: 'E',
- 			scope: {},
- 			transclude: true,
- 			template: "<div>This is the welcome component</div><ng-transclude></ng-transclude>"
- 		}
- 	})
-
- 	.directive("clock", function() {
- 		return {
- 			restrict: "E",
- 			scope: {
- 				timezone: "@"
- 			},
- 			template: "<div>12:00pm {{timezone}} </div>"
- 		}
- 	})
-
- 	.directive("panel", function() {
- 		return {
- 			restrict: "E",
- 			transclude: true,
- 			scope: {
- 				title: "@"
- 			},
- 			template: "<div class='styled'>"+ "<div class='alert-box'>{{title}}</div>"+"<div ng-transclude></div>" + "</div"
- 		}
- 	})
-
- 	.directive('myBox', function() {
- 		return {
+ 		var directive = {
  			transclude: true,
  			restrict: 'E',
  			scope: {title: '@', bwidth: '@bwidth'},
  			template: "<div><span class='titleBar'>{{title}}"+ "</span> <div ng-transclude></div></div>",
- 			link:function(scope, elem, attr, controller, transclude) {
+ 			link:link
+ 		}
+ 		return directive;
+ 		
+ 		function link(scope, elem, attr, controller, transclude) {
  				console.log('scope', scope.$parent)
  				console.log('controller', controller);
  				elem.append('<span class="footer">'+ scope.$parent.title + '</span>');
@@ -203,8 +242,7 @@ angular.module('myApp', [])
  				elem.css('display', 'block');
  				elem.css('width', scope.bwidth);
  			}
- 		}
- 	})
+ 	}
 
 
 	function FunCtrl() {
