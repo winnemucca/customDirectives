@@ -1,6 +1,6 @@
 angular.module('myApp', [])
 	.controller('FunCtrl',FunCtrl)
-	
+
 	.directive('entering', entering)
 
 	.directive('zoomit', zoomit)
@@ -22,6 +22,54 @@ angular.module('myApp', [])
  	.directive("panel", panel)
 
  	.directive('myBox', myBox)
+
+
+ 	.directive('myPhotos', myPhotos)
+
+ 	.directive('myPhoto', myPhoto)
+
+ 	function myPhotos() {
+ 		var directive = {
+ 			restrict: 'E',
+ 			transclude: true,
+ 			scope: {},
+ 			controller: photosController,
+ 			templateUrl: 'my_photos.html'
+ 		}
+ 		return directive;
+
+ 			function photosController($scope) {
+			var photos = $scope.photos = [];
+			$scope.select = function(photo) {
+				angular.forEach(photos, function() {
+					photo.selected = false;
+				})
+
+				photo.selected = true;
+			}
+			this.addPhoto = function(photo) {
+				photos.push(photo);
+			}
+ 		}
+ 	}
+
+ 	function myPhoto() {
+
+ 		var directive = {
+ 			require: '^myPhotos',
+ 			restrict: 'E',
+ 			transclude: true,
+ 			scope: {title:'@'},
+ 			link:link,
+ 			template: '<div ng-show="selected" ng-transclude></div>'
+
+ 		}
+ 		return directive;
+
+ 		function link(scope, elem,attrs, photosController) {
+ 				photosController.addPhoto(scope);
+ 			}
+ 	}
 
  	function hi() {
 

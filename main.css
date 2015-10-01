@@ -26,6 +26,10 @@ my-box {
 	margin: 10px 10px;
 }
 
+my-photo img {
+	width: 300px;
+}
+
 .small {
 	width: 200px;
 }
