@@ -29,3 +29,8 @@ my-box {
 .small {
 	width: 200px;
 }
+
+.title {
+	text-align: center;
+	font-size: 14px;
+}

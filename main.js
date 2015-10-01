@@ -237,7 +237,7 @@ angular.module('myApp', [])
  		function link(scope, elem, attr, controller, transclude) {
  				console.log('scope', scope.$parent)
  				console.log('controller', controller);
- 				elem.append('<span class="footer">'+ scope.$parent.title + '</span>');
+ 				elem.append('<span class="footer title">'  +scope.$parent.fun.title + '</span>');
  				elem.css('border', '2px ridge black');
  				elem.css('display', 'block');
  				elem.css('width', scope.bwidth);
